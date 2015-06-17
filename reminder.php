@@ -67,7 +67,7 @@ $lang = 'en';
                 <div class="row">
                     <div class="col-lg-12">
                     <?php 
-                    if (!isset($_POST['submit'])) {
+                    if (!isset($_POST['submit']) || !isset($_POST['g-recaptcha-response'])) {
                         echo '
                         <h1>Setup a Reminder</h1>
                         <br />
