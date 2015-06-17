@@ -1,3 +1,13 @@
+<?php
+require "recaptcha_autoload.php";
+require "config.php";
+if ($reCaptchaSiteKey == "" || $reCaptchaSiteSecretKey == "") {
+    die("reCaptcha API Key and Secret not found. Register yours at https://www.google.com/recaptcha/ .");
+}
+$recaptcha = new \ReCaptcha\ReCaptcha($reCaptchaSiteSecretKey);
+$lang = 'en';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,17 +66,20 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12">
+                    <?php 
+                    if (!isset($_POST['submit'])) {
+                        echo '
                         <h1>Setup a Reminder</h1>
                         <br />
                         <p>Setup a weekly email reminder with your York email address below:</p>
                         <br />
-                        <form class="form-inline">
+                        <form class="form-inline" method="post" name="setupForm" action="';echo $_SERVER["PHP_SELF"];echo '">
                             <div class="form-group">
                                 <label class="sr-only" for="emailAddress">Email Address To Receive Alerts</label>
                                 <div class="input-group">
-                                <div class="input-group-addon">York Email Address:</div>
-                                <input type="text" class="form-control" id="yorkEmail" placeholder="abc1234">
-                                <div class="input-group-addon">@york.ac.uk</div>
+                                    <div class="input-group-addon">York Email Address:</div>
+                                    <input type="text" class="form-control" id="yorkEmail" placeholder="abc1234">
+                                    <div class="input-group-addon">@york.ac.uk</div>
                                 </div>
                             </div><br /><br /><br />
                             <div class="form-group">
@@ -97,23 +110,61 @@
                                 <label>During...</label><br />
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" id="EmailSunday"> Term Time  
+                                        <input type="checkbox" id="EmailTermTime"> Term Time  
                                     </label>
                                     <label>
-                                        <input type="checkbox" id="EmailMonday"> Vacations
+                                        <input type="checkbox" id="EmailVacations"> Vacations
                                     </label>
+                                </div>
+                                <br /><br /><br />
+                                <div class="g-recaptcha" data-sitekey="';echo $reCaptchaSiteKey;echo'"></div>
+                                <script type="text/javascript"
+                                        src="https://www.google.com/recaptcha/api.js?hl=<?php echo $lang; ?>">
+                                </script>
+                                <br /><br />
+                                <button type="submit" class="btn btn-primary" name="submit">Set Up Reminder</button>
                             </div>
-                            <br /><br /><br />
-                            <button type="submit" class="btn btn-primary">Set Up Reminder</button>
-                        </form>
+                        </form>';
+                    }
+
+                    else {
+
+                        if ($CDNXForwardedFor == True && isset($_SERVER['X-Forwarded-For'])){
+                            $userAddr = $_SERVER['X-Forwarded-For'];
+                        }
+                        else {
+                            $userAddr = $_SERVER['REMOTE_ADDR'];
+                        }
+                        
+                        $resp = $recaptcha->verify($_POST['g-recaptcha-response'], $userAddr);
+
+                        if ($resp->isSuccess()) {
+                            echo '
+                            <h1>Successful</h1>
+                            <br />
+                            <p>The subscription is now set. You will receive reminders on evening(s) of the day(s) you selected.</p>
+                            <br />
+                            ';
+                        }
+                        else {
+                            echo '
+                            <h1>Error</h1>
+                            <br />
+                            <p>There seems to be some problem with the verification code you entered.</p><br /><br />
+                            <form action="reminder.php">
+                                <input type="submit" value="Return">
+                            </form>
+                            <br />
+                            ';
+                        }
+                    }
+                    ?>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- /#page-content-wrapper -->
 
     </div>
-    <!-- /#wrapper -->
 
     <!-- jQuery -->
     <script src="js/jquery.js"></script>
