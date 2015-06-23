@@ -1,6 +1,7 @@
 <?php
 require "recaptcha_autoload.php";
 require "config.php";
+
 if ($reCaptchaSiteKey == "" || $reCaptchaSiteSecretKey == "") {
     die("reCaptcha API Key and Secret not found. Register yours at https://www.google.com/recaptcha/ .");
 }
@@ -78,7 +79,7 @@ $lang = 'en';
                                 <label class="sr-only" for="emailAddress">Email Address To Receive Alerts</label>
                                 <div class="input-group">
                                     <div class="input-group-addon">York Email Address:</div>
-                                    <input type="text" class="form-control" id="yorkEmail" placeholder="abc1234">
+                                    <input type="text" class="form-control" name="yorkEmail" id="yorkEmail" placeholder="abc1234">
                                     <div class="input-group-addon">@york.ac.uk</div>
                                 </div>
                             </div><br /><br /><br />
@@ -138,15 +139,124 @@ $lang = 'en';
                         
                         $resp = $recaptcha->verify($_POST['g-recaptcha-response'], $userAddr);
 
+                        $client_email = filter_var($_POST['yorkEmail'],FILTER_SANITIZE_EMAIL) + "@york.ac.uk";
+
                         if ($resp->isSuccess()) {
-                            echo '
-                            <h1>Successful</h1>
-                            <br />
-                            <p>The subscription is now set. You will receive reminders on evening(s) of the day(s) you selected.</p>
-                            <br />
-                            ';
+
+                            if (filter_var($client_email, FILTER_VALIDATE_EMAIL)) {
+
+                                $days_array = [
+                                    "monday" => 0,
+                                    "tuesday" => 0,
+                                    "wednesday" => 0,
+                                    "thursday" => 0,
+                                    "friday" => 0,
+                                    "saturday" => 0,
+                                    "sunday" => 0,
+                                ];
+
+                                $choices_array = [
+                                    "termtime" => 0,
+                                    "vacations" => 0,
+                                ];
+
+                                //Set days according to checkboxes
+                                $days_array_empty = true;
+                                
+                                if (isset($_POST['EmailMonday'])) {
+                                    $days_array['monday'] = 1;
+                                    $days_array_empty = false;
+                                }
+
+                                if (isset($_POST['EmailTuesday'])) {
+                                    $days_array['tuesday'] = 1;
+                                    $days_array_empty = false;
+                                }
+
+                                if (isset($_POST['EmailWednesday'])) {
+                                    $days_array['wednesday'] = 1;
+                                    $days_array_empty = false;
+                                }
+
+                                if (isset($_POST['EmailThursday'])) {
+                                    $days_array['thursday'] = 1;
+                                    $days_array_empty = false;
+                                }
+                                
+                                if (isset($_POST['EmailFriday'])) {
+                                    $days_array['friday'] = 1;
+                                    $days_array_empty = false;
+                                }
+                                
+                                if (isset($_POST['EmailSaturday'])) {
+                                    $days_array['saturday'] = 1;
+                                    $days_array_empty = false;
+                                }
+                                
+                                if (isset($_POST['EmailSunday'])) {
+                                    $days_array['sunday'] = 1;
+                                    $days_array_empty = false;
+                                }
+
+                                //Set termtime and/or vacation reminders according to choice
+                                $days_array_empty = true;
+
+                                if (isset($_POST['EmailTermTime'])) {
+                                    $choices_array["termtime"] = 1;
+                                    $days_array_empty = false;
+                                }
+
+                                if (isset($_POST['EmailVacations'])) {
+                                    $choices_array["vacations"] = 1;
+                                    $days_array_empty = false;
+                                }
+
+                                if ($days_array_empty == true || $days_array_empty == true) {
+                                    //Empty day selection error
+                                    echo '
+                                    <h1>Error</h1>
+                                    <br />
+                                    <p>You don\'t seem to have selected any day (or termtime/vacations) to be reminded. </p><br /><br />
+                                    <form action="reminder.php">
+                                        <input type="submit" value="Return">
+                                    </form>
+                                    <br />
+                                    ';
+                                }
+
+                                else {
+                                    //generate unsubscription hash
+                                    $unsub_hash = sha1(strrev(base64_encode($client_email)));
+
+                                    //sqlite operations
+                                    //Todo: finish this!
+                                    $client_submission = new SQLite3('Goodricke.sqlite');
+                                    $client_submission_statement = $client_submission->prepare('INSERT INTO subscriptions(senderip, sender, receiver, messagebody, messageIV, messagetag) VALUES (:ip , :sender , :receiver , :body , :iv , :tag);');
+                                    $client_submission_statement->bindvalue(':ip',$client_IP);
+
+                                    echo '
+                                    <h1>Successful</h1>
+                                    <br />
+                                    <p>The subscription is now set. You will receive reminders on evening(s) of the day(s) you selected.</p>
+                                    <br />
+                                    ';
+                                }
+                            else {
+                                //Email address invalid
+                                echo '
+                                <h1>Error</h1>
+                                <br />
+                                <p>There seems to be some problem with the email addresss you entered.</p><br /><br />
+                                <form action="reminder.php">
+                                    <input type="submit" value="Return">
+                                </form>
+                                <br />
+                                ';
+                            }
+
                         }
                         else {
+                            //Verification code invalid
                             echo '
                             <h1>Error</h1>
                             <br />
