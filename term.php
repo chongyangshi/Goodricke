@@ -1,3 +1,8 @@
+<?php 
+    require 'config.php';
+    require 'utils.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -65,7 +70,7 @@
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
-                                            <th>2015-2016 Term</th>
+                                            <th><?php echo $termDates['academicYear']['starts']."-".$termDates['academicYear']['ends']; ?></th>
                                             <th>Begins on</th>
                                             <th>Ends on</th>
                                         </tr>

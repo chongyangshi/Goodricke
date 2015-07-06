@@ -5,6 +5,10 @@ require "config.php";
 if ($reCaptchaSiteKey == "" || $reCaptchaSiteSecretKey == "") {
     die("reCaptcha API Key and Secret not found. Register yours at https://www.google.com/recaptcha/ .");
 }
+
+require 'vendor/autoload.php';
+use Mailgun\Mailgun;
+
 $recaptcha = new \ReCaptcha\ReCaptcha($reCaptchaSiteSecretKey);
 $lang = 'en';
 ?>
@@ -53,7 +57,7 @@ $lang = 'en';
                     <a href="#">Set Reminder</a>
                 </li>
                 <li>
-                    <a href="./term.html">Term Dates</a>
+                    <a href="./term.php">Term Dates</a>
                 </li>
                 <li>
                     <a href="./about.html">About</a>
@@ -87,34 +91,34 @@ $lang = 'en';
                                 <label>Inform me on the evening of...</label><br />
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" id="EmailSunday"> Sunday  
+                                        <input type="checkbox" name="EmailSunday" id="EmailSunday"> Sunday  
                                     </label>
                                     <label>
-                                        <input type="checkbox" id="EmailMonday"> Monday  
+                                        <input type="checkbox" name="EmailMonday" id="EmailMonday"> Monday  
                                     </label>
                                     <label>
-                                        <input type="checkbox" id="EmailTuesday"> Tuesday  
+                                        <input type="checkbox" name="EmailTuesday" id="EmailTuesday"> Tuesday  
                                     </label>
                                     <label>
-                                        <input type="checkbox" id="EmailWednesday"> Wednesday  
+                                        <input type="checkbox" name="EmailWednesday" id="EmailWednesday"> Wednesday  
                                     </label>
                                     <label>
-                                        <input type="checkbox" id="EmailThursday"> Thursday  
+                                        <input type="checkbox" name="EmailThursday" id="EmailThursday"> Thursday  
                                     </label>
                                     <label>
-                                        <input type="checkbox" id="EmailFriday"> Friday  
+                                        <input type="checkbox" name="EmailFriday" id="EmailFriday"> Friday  
                                     </label>
                                     <label>
-                                        <input type="checkbox" id="EmailSaturday"> Saturday  
+                                        <input type="checkbox" name="EmailSaturday" id="EmailSaturday"> Saturday  
                                     </label>
                                 </div><br /><br />
                                 <label>During...</label><br />
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" id="EmailTermTime"> Term Time  
+                                        <input type="checkbox" name="EmailTermTime" id="EmailTermTime"> Term Time  
                                     </label>
                                     <label>
-                                        <input type="checkbox" id="EmailVacations"> Vacations
+                                        <input type="checkbox" name="EmailVacations" id="EmailVacations"> Vacations
                                     </label>
                                 </div>
                                 <br /><br /><br />
@@ -137,14 +141,16 @@ $lang = 'en';
                             $userAddr = $_SERVER['REMOTE_ADDR'];
                         }
                         
-                        $resp = $recaptcha->verify($_POST['g-recaptcha-response'], $userAddr);
+                        $resp = $recaptcha->verify($_POST['g-recaptcha-response'], $userAddr); 
 
-                        $client_email = filter_var($_POST['yorkEmail'],FILTER_SANITIZE_EMAIL) + "@york.ac.uk";
+                        //"@york.ac.uk" is added here
+                        $client_email = filter_var($_POST['yorkEmail'],FILTER_SANITIZE_EMAIL)."@york.ac.uk";
 
                         if ($resp->isSuccess()) {
 
                             if (filter_var($client_email, FILTER_VALIDATE_EMAIL)) {
 
+                                //array of choices, 0 (not chosen) by default
                                 $days_array = [
                                     "monday" => 0,
                                     "tuesday" => 0,
@@ -226,21 +232,102 @@ $lang = 'en';
 
                                 else {
                                     //generate unsubscription hash
-                                    $unsub_hash = sha1(strrev(base64_encode($client_email)));
+                                    $unsub_hash = sha1(strrev(base64_encode($client_email)).$emailHashingSalt);
 
                                     //sqlite operations
-                                    //Todo: finish this!
                                     $client_submission = new SQLite3('Goodricke.sqlite');
-                                    $client_submission_statement = $client_submission->prepare('INSERT INTO subscriptions(senderip, sender, receiver, messagebody, messageIV, messagetag) VALUES (:ip , :sender , :receiver , :body , :iv , :tag);');
-                                    $client_submission_statement->bindvalue(':ip',$client_IP);
+                                    $client_submission_valid = false;
 
-                                    echo '
-                                    <h1>Successful</h1>
-                                    <br />
-                                    <p>The subscription is now set. You will receive reminders on evening(s) of the day(s) you selected.</p>
-                                    <br />
-                                    ';
+                                    //check if that client email is already in the system
+                                    $client_submission_check = $client_submission->prepare('SELECT active FROM subscriptions WHERE (yorkemail = :email);');
+                                    $client_submission_check->bindvalue(':email', $client_email);
+
+                                    if ($client_submission_check_execution = $client_submission_check->execute()) {
+
+                                        $client_submission_check_result = $client_submission_check_execution->fetchArray(SQLITE3_ASSOC);
+
+                                        if ($client_submission_check_result != false) {
+                                            echo '
+                                            <h1>Error</h1>
+                                            <br />
+                                            <p>There seems to be some problem with the email addresss you entered.</p><br /><br />
+                                            <form action="reminder.php">
+                                                <input type="submit" value="Return">
+                                            </form>
+                                            <br />
+                                            ';
+                                        }
+
+                                        else {
+                                            $client_submission_valid = true;
+                                        }
+
+                                    }
+
+
+                                    //if not, insert data to database, and send verification email
+                                    if ($client_submission_valid == true) {
+
+                                        $client_submission_statement = $client_submission->prepare('INSERT INTO subscriptions(yorkemail, monday, tuesday, wednesday, thursday, 
+                                                                                                                friday, saturday, sunday, unsubcode, termtime_reminders, vacation_reminders)
+                                                                                                    VALUES (:email , :mon , :tue , :wed , :thu ,
+                                                                                                            :fri , :sat , :sun , :unsub , :termtime, :vacation);');
+                                        $client_submission_statement->bindvalue(':email', $client_email);
+                                        $client_submission_statement->bindvalue(':mon', $days_array['monday']);
+                                        $client_submission_statement->bindvalue(':tue', $days_array['tuesday']);
+                                        $client_submission_statement->bindvalue(':wed', $days_array['wednesday']);
+                                        $client_submission_statement->bindvalue(':thu', $days_array['thursday']);
+                                        $client_submission_statement->bindvalue(':fri', $days_array['friday']);
+                                        $client_submission_statement->bindvalue(':sat', $days_array['saturday']);
+                                        $client_submission_statement->bindvalue(':sun', $days_array['sunday']);
+                                        $client_submission_statement->bindvalue(':unsub', $unsub_hash);
+                                        $client_submission_statement->bindvalue(':termtime', $choices_array["termtime"]);
+                                        $client_submission_statement->bindvalue(':vacation', $choices_array["vacations"]);
+
+                                        if ($client_submission_statement->execute()) {
+                                            //Send opt-in email
+                                            $mg = new Mailgun($mailgunAPIKey);
+                                            $sender_address = "no-reply@".$mailgunDomain;
+                                            $verification_address = $systemDomainAddress."subscribe.php?e=".base64_encode("$client_email")."&v=".$unsub_hash;
+                                            $verification_message = "
+Hi there,
+
+Someone, hopefully you, has subscribed your email address to Goodricke reminder service.
+
+If you wish to set up the subscription, please click the link below:
+".
+$verification_address."
+
+If you do not wish to set up, please ignore this email.
+
+Best regards,
+
+Goodricke Reminder Service
+                                            ";
+
+                                            $mg->sendMessage($mailgunDomain, array('from'    => $sender_address, 
+                                                                            'to'      => $client_email, 
+                                                                            'subject' => 'Please Confirm Your Goodricke Cleaning Reminders Subscription', 
+                                                                            'text'    => $verification_message));
+
+                                            echo '
+                                            <h1>Successful</h1>
+                                            <br />
+                                            <p>The subscription is now set. Please confirm your subscription in the email sent to the address you provided.</p>
+                                            <p>Once the subscription is confirmed, you will receive reminders on evening(s) of the day(s) you selected.</p>
+                                            <br />
+                                            ';
+                                        }
+
+                                        else {
+                                            //Display 500 Error if SQL query cannot be executed.
+                                            echo "<h1>500: Server Unavailable.</h1>";
+                                            header('HTTP/1.0 500 Internal Server Error'); 
+                                        }
+                                    }
                                 }
+                            }
+
                             else {
                                 //Email address invalid
                                 echo '
@@ -255,6 +342,7 @@ $lang = 'en';
                             }
 
                         }
+
                         else {
                             //Verification code invalid
                             echo '
