@@ -339,7 +339,7 @@ library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.
 
 ====================================================================
-Goodricke utilises recaptcha:
+Goodricke utilises reaptcha:
 
 Copyright 2014, Google Inc.
 All rights reserved.
@@ -370,3 +370,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+====================================================================
+Goodricke utilises Mailgun's PHP Library:
+
+For license details, see https://github.com/mailgun/mailgun-php .
