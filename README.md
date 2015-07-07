@@ -1,6 +1,6 @@
 # Goodricke
 
-A reminder scheduling service to help you take care of cleaning days in halls of residence.
+GNU/Goodricke is a reminder scheduling service to help you take care of cleaning days in halls of residence.
 
 **This is the source code of the site. To simply subscribe to the reminder service, please visit [Goodricke](https://goodricke.ebornet.com/).**
 
@@ -12,7 +12,7 @@ Git clone or download the repository to your virtual host's file directory.
 
 **It is important to block off access to the `.sqlite` file. Directory of the repository already contains the `.htaccess` file for Apache servers. For Nginx servers, please move `conf/goodricke.conf` to an appropriate location and make Nginx include it in the virtual host's configuration file.**
 
-Rename `config.sample.php` to `config.php`, and configure it as stated in the script's comments.
+Rename `config.sample.php` to `config.php`, and configure it as stated in the script's comments. UoY's 2015-2016 term dates are already set in the sample.
 
 You can obtain reCaptcha API keys from [here](https://www.google.com/recaptcha/intro/index.html), and obtain Mailgun API keys from [here](https://mailgun.com/).
 
@@ -24,5 +24,9 @@ Finally, create a crontab job to execute the email sendings every day at a given
 
 This service is still in its alpha state. Issues, Pull Requests and Feedbacks are very welcome. You can also contact me at shi[AT]ebornet.com .
 
+## License
 
+GNU General Public License, Version 2.
+
+See `LICENSE` for license details.
 
