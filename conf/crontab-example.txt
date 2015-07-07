@@ -1,0 +1,1 @@
+15 20 * * * /usr/bin/php /usr/share/nginx/html/goodricke/cron.php
