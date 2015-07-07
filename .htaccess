@@ -1,0 +1,4 @@
+<Files ~ "\.(sqlite|sql|db)$">
+   order deny,allow
+   deny from all
+</Files>
