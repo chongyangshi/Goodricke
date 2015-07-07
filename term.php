@@ -78,18 +78,18 @@
                                     <tbody>
                                         <tr>
                                             <th>Autumn</th>
-                                            <th>28 September 2015</th>
-                                            <th>4 December 2015</th>
+                                            <th><?php echo read_date($termDates['autumn']['starts'], 0)[0]." ".read_date($termDates['autumn']['starts'], 0)[1]." ".$termDates['academicYear']['starts']; ?></th>
+                                            <th><?php echo read_date($termDates['autumn']['ends'], 0)[0]." ".read_date($termDates['autumn']['ends'], 0)[1]." ".$termDates['academicYear']['starts']; ?></th>
                                         </tr>
                                         <tr>
                                             <th>Spring</th>
-                                            <th>4 January 2016</th>
-                                            <th>11 March 2016</th>
+                                            <th><?php echo read_date($termDates['spring']['starts'], 0)[0]." ".read_date($termDates['spring']['starts'], 0)[1]." ".$termDates['academicYear']['ends']; ?></th>
+                                            <th><?php echo read_date($termDates['spring']['ends'], 0)[0]." ".read_date($termDates['spring']['ends'], 0)[1]." ".$termDates['academicYear']['ends']; ?></th>
                                         </tr>
                                         <tr>
                                             <th>Summer</th>
-                                            <th>11 April 2016</th>
-                                            <th>17 June 2016</th>
+                                            <th><?php echo read_date($termDates['summer']['starts'], 0)[0]." ".read_date($termDates['summer']['starts'], 0)[1]." ".$termDates['academicYear']['ends']; ?></th>
+                                            <th><?php echo read_date($termDates['summer']['ends'], 0)[0]." ".read_date($termDates['summer']['ends'], 0)[1]." ".$termDates['academicYear']['ends']; ?></th>
                                         </tr>
                                     </tbody>
                                 </table>
