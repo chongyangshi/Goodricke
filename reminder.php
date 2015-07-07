@@ -128,6 +128,8 @@ $lang = 'en';
                                 </script>
                                 <br /><br />
                                 <button type="submit" class="btn btn-primary" name="submit">Set Up Reminder</button>
+                                <br /><br />
+                                <label>By confirming your subscription, you agree to GNU/Goodricke\'s <a href="./privacy.html">Privacy Policy.</a></label>
                             </div>
                         </form>';
                     }
