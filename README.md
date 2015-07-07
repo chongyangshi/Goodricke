@@ -16,6 +16,8 @@ Rename `config.sample.php` to `config.php`, and configure it as stated in the sc
 
 You can obtain reCaptcha API keys from [here](https://www.google.com/recaptcha/intro/index.html), and obtain Mailgun API keys from [here](https://mailgun.com/).
 
+Make sure that database `Goodricke.sqlite` is writable by the webserver.
+
 Finally, create a crontab job to execute the email sendings every day at a given time. An example is given in `conf/crontab-example.txt`, which sends emails every day at 8:15 pm.
 
 ## Questions and Feedback
