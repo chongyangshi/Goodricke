@@ -124,7 +124,7 @@ $lang = 'en';
                                 <br /><br /><br />
                                 <div class="g-recaptcha" data-sitekey="';echo $reCaptchaSiteKey;echo'"></div>
                                 <script type="text/javascript"
-                                        src="https://www.google.com/recaptcha/api.js?hl=<?php echo $lang; ?>">
+                                        src="https://www.google.com/recaptcha/api.js?hl=';echo $lang; echo'">
                                 </script>
                                 <br /><br />
                                 <button type="submit" class="btn btn-primary" name="submit">Set Up Reminder</button>
