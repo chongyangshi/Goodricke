@@ -128,7 +128,8 @@ $lang = 'en';
                                 </script>
                                 <br /><br />
                                 <button type="submit" class="btn btn-primary" name="submit">Set Up Reminder</button>
-                                <br /><br />
+                                <br /><br /><br />
+                                <label>Please only enter the local part of your York Email Address (e.g. abc1234 or john.smith), other email addresses are not yet supported.</label><br /><br />
                                 <label>By confirming your subscription, you agree to GNU/Goodricke\'s <a href="./privacy.html">Privacy Policy</a>.</label>
                             </div>
                         </form>';
@@ -145,12 +146,17 @@ $lang = 'en';
                         
                         $resp = $recaptcha->verify($_POST['g-recaptcha-response'], $userAddr); 
 
-                        //"@york.ac.uk" is added here
-                        $client_email = filter_var($_POST['yorkEmail'],FILTER_SANITIZE_EMAIL)."@york.ac.uk";
+                        if (preg_match('/^[a-zA-Z0-9.]+$/', $_POST['yorkEmail'])) {
+                            $address_valid = true;
+                            $client_email = $_POST['yorkEmail'].'@york.ac.uk';
+                        }
+                        else {
+                            $address_valid = false;
+                        }
 
-                        if ($resp->isSuccess()) {
+                        if (($resp->isSuccess()) && ($address_valid == true)) {
 
-                            if (filter_var($client_email, FILTER_VALIDATE_EMAIL)) {
+                            if (filter_var($client_email, FILTER_SANITIZE_EMAIL)) { //FILTER_SANITIZE_EMAIL is a placeholder here (work already done above), as other parts of code may be changed in the future.
 
                                 //array of choices, 0 (not chosen) by default
                                 $days_array = [
@@ -343,6 +349,19 @@ Goodricke Reminder Service
                                 ';
                             }
 
+                        }
+
+                        elseif (($resp->isSuccess()) && ($address_valid == false)) {
+                            //Email address invalid
+                            echo '
+                            <h1>Error</h1>
+                            <br />
+                            <p>The York Email Address you just entered was invalid. Please only enter the local part of the address, for example, <b>abc1234</b> or <b>john.smith</b></p><br /><br />
+                            <form action="reminder.php">
+                                <input type="submit" value="Return">
+                            </form>
+                            <br />
+                            ';                            
                         }
 
                         else {
