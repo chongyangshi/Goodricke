@@ -95,12 +95,12 @@ if ($sending_query_result = $sending_query->execute()){
 	}
 
 	$mg = new Mailgun($mailgunAPIKey);
-    $sender_address = "no-reply@".$mailgunDomain;
+    	$sender_address = "no-reply@".$mailgunDomain;
 
-    foreach ($receivers as $client_email) {
-	    $unsubscribe_address = $systemDomainAddress."unsubscribe.php?e=".base64_encode($client_email[0])."&v=".$client_email[1];
+    	foreach ($receivers as $client_email) {
+		$unsubscribe_address = $systemDomainAddress."unsubscribe.php?e=".base64_encode($client_email[0])."&v=".$client_email[1];
 
-	    $reminder_message = "
+		$reminder_message = "
 Hi there,
 
 This is a weekly email reminder from Goodricke Cleaning Reminder Service. You have scheduled cleaning reminder(s) to be sent to you every week.
