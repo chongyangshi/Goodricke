@@ -10,7 +10,7 @@ $systemDomainAddress = "https://goodricke.example.com/";
 $reCaptchaSiteKey = "";        //reCaptcha Site Key
 $reCaptchaSiteSecretKey = "";  //reCaptcha Site Secret Key
 
-//Change the settings if you are using a CDN service for your server.
+//Change the settings if you are using a CDN service for your server. Setting reserved for future features.
 $CDNXForwardedFor = False; //Set this to True if your server is behind a CDN/Firewall service like CloudFlare.
 
 //Change the below to a string of your liking.
