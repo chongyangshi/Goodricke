@@ -22,7 +22,7 @@ Finally, create a crontab job to execute the email sendings every day at a given
 
 ## Questions and Feedback
 
-This service is still in its alpha state. Issues, Pull Requests and Feedbacks are very welcome. You can also contact me at shi[AT]ebornet.com .
+This service is in beta. Issues, Pull Requests and Feedbacks are very welcome. You can also contact me at shi[AT]ebornet.com .
 
 ## License
 
