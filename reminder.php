@@ -130,7 +130,9 @@ $lang = 'en';
                                 <button type="submit" class="btn btn-primary" name="submit">Set Up Reminder</button>
                                 <br /><br /><br />
                                 <label>Please only enter the local part of your York Email Address (e.g. abc1234 or john.smith), other email addresses are not yet supported.</label><br /><br />
-                                <label>By confirming your subscription, you agree to GNU/Goodricke\'s <a href="./privacy.html">Privacy Policy</a>.</label>
+                                <label>By confirming your subscription, you agree to GNU/Goodricke\'s <a href="./privacy.html">Privacy Policy</a>.</label><br /><br />
+                                <p>Please check the <a href="/about.html">About</a> page for information related to this service, and frequently asked questions.</p>
+
                             </div>
                         </form>';
                     }
