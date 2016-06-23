@@ -12,7 +12,7 @@ Git clone or download the repository to your virtual host's file directory.
 
 **It is important to block off access to the `.sqlite` file. Directory of the repository already contains the `.htaccess` file for Apache servers. For Nginx servers, please move `conf/goodricke.conf` to an appropriate location and make Nginx include it in the virtual host's configuration file.**
 
-Rename `config.sample.php` to `config.php`, and configure it as stated in the script's comments. UoY's 2015-2016 term dates are already set in the sample.
+Rename `config.sample.php` to `config.php`, and configure it as stated in the script's comments. UoY's 2016-2017 term dates are already set in the sample.
 
 You can obtain reCaptcha API keys from [here](https://www.google.com/recaptcha/intro/index.html), and obtain Mailgun API keys from [here](https://mailgun.com/).
 
