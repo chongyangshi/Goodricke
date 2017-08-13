@@ -22,10 +22,10 @@ $mailgunDomain = "goodricke.example.com"; //exactly the same as the domain you s
 
 //Set the term dates below, be careful.
 $termDates = array (
-	"academicYear" => array("starts" => "2016", "ends" => "2017"), //set "starts" to the year of autumn term, "ends" to the year of spring and summer term
-	"autumn" => array("starts" => "26/09", "ends" => "02/12"), //set "starts" to the date of start of autumn term, in the form of "DD/MM"
-	"spring" => array("starts" => "09/01", "ends" => "17/03"), //set "starts" to the date of start of spring term, in the form of "DD/MM"
-	"summer" => array("starts" => "18/04", "ends" => "23/06"), //set "starts" to the date of start of summer term, in the form of "DD/MM"
+	"academicYear" => array("starts" => "2017", "ends" => "2018"), //set "starts" to the year of autumn term, "ends" to the year of spring and summer term
+	"autumn" => array("starts" => "25/09", "ends" => "01/12"), //set "starts" to the date of start of autumn term, in the form of "DD/MM"
+	"spring" => array("starts" => "08/01", "ends" => "16/03"), //set "starts" to the date of start of spring term, in the form of "DD/MM"
+	"summer" => array("starts" => "16/04", "ends" => "22/06"), //set "starts" to the date of start of summer term, in the form of "DD/MM"
 );
 
 ?>
