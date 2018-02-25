@@ -2,7 +2,7 @@
 
 GNU/Goodricke is a reminder scheduling service to help you take care of cleaning days in halls of residence.
 
-**This is the source code of the site. To simply subscribe to the reminder service, please visit [Goodricke](https://goodricke.ebornet.com/).**
+**This is the source code of a legacy service I operated while at York, which was originally hosted [here](https://goodricke.ebornet.com/).**
 
 ## Deployment
 
